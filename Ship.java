@@ -12,7 +12,7 @@ public abstract class Ship {
 		return length;
 	}
 	
-	public void place(Board board, int x, int y, Orientation dir) throws improperPlacementException{
+	public void place(Board board, int x, int y, Orientation dir) throws ImproperPlacementException{
 		switch(dir){
 		case UP:	for (int ii = 0; ii < length; ii++){
 						pointPlace(board,y+ii,x);
@@ -33,13 +33,13 @@ public abstract class Ship {
 		}
 	}
 	
-	public void pointPlace(Board board, int x, int y) throws improperPlacementException{
+	public void pointPlace(Board board, int x, int y) throws ImproperPlacementException{
 		if (x >= board.getSize() || y >= board.getSize()){
-			throw new improperPlacementException("Ship leaves board.");
-		} else if (!(board.getPoint(x,y).getPrivateStatus() == Point.ToPlayer.EMPTY)){
-			throw new improperPlacementException("Ship placement obstructed.");
+			throw new ImproperPlacementException("Ship leaves board.");
+		} else if (!(board.getPoint(x,y).getPrivateStatus() == ToPlayer.EMPTY)){
+			throw new ImproperPlacementException("Ship placement obstructed.");
 		} else {
-			board.getPoint(x, y).setPrivateStatus(Point.ToPlayer.SHIP_INTACT);
+			board.getPoint(x, y).setPrivateStatus(ToPlayer.SHIP_INTACT);
 		}
 	}
 

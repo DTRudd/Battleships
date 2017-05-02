@@ -2,9 +2,6 @@ package battleships;
 
 public class Point {
 
-	public static enum ToEnemy {HIT, MISS,UNTOUCHED};
-	public static enum ToPlayer {EMPTY, SHIP_INTACT, SHIP_DESTROYED};
-
 	private ToEnemy publicStatus;
 	private ToPlayer privateStatus;
 	
@@ -19,6 +16,31 @@ public class Point {
 	}
 	public void setPrivateStatus(ToPlayer privateStatus) {
 		this.privateStatus = privateStatus;
+	}
+	
+	public ToEnemy defend() throws AttackNotPermittedException {
+		if (this.publicStatus != ToEnemy.UNTOUCHED){
+			throw new AttackNotPermittedException("Already attacked there.");
+		} else {
+			if (this.privateStatus == ToPlayer.EMPTY){
+				this.publicStatus = ToEnemy.MISS;
+				return ToEnemy.MISS;
+			} else {
+				this.privateStatus = ToPlayer.SHIP_DESTROYED;
+				this.publicStatus = ToEnemy.HIT;
+				return ToEnemy.HIT;
+			}
+		}
+	}
+	
+	public char getPrivateCharStatus(){
+		if (this.privateStatus == ToPlayer.EMPTY){
+			return '-';
+		} else if (this.privateStatus == ToPlayer.SHIP_DESTROYED){
+			return 'X';
+		} else {
+			return 'O';
+		}
 	}
 	
 	public Point() {
