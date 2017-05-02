@@ -4,7 +4,12 @@ public abstract class Ship {
 
 	int length;
 	int intactLength;
+	Player owner;
 	public enum Orientation {UP, DOWN, LEFT, RIGHT};
+	
+	public Ship(Player p){
+		owner = p;
+	}
 	
 	public void sink(){
 		System.out.println("You've sunk this vessel!");
@@ -22,6 +27,7 @@ public abstract class Ship {
 		intactLength = len;
 		if (intactLength == 0){
 			sink();
+			owner.getShips().remove(this);
 		}
 	}
 	

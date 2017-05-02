@@ -44,13 +44,22 @@ public class Game {
 					printState();
 					if (result != ToEnemy.HIT){
 						p1Starts = false;
+						System.out.println("\n\n\nPlayer 2's turn");
+					}
+					if (player2.getShips().size() == 0){
+						System.out.println("Player 1 wins!");
+						break;
 					}
 				} else {
 					result = turn(player2,player1);
 					printState();
 					if (result != ToEnemy.HIT){
 						p1Starts = true;
-						
+						System.out.println("\n\n\nPlayer 1's turn");
+					}
+					if (player1.getShips().size() == 0){
+						System.out.println("Player 1 wins!");
+						break;
 					}
 				}
 			} catch (ArrayIndexOutOfBoundsException | AttackNotPermittedException e){

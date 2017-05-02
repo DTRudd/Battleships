@@ -1,10 +1,13 @@
 package battleships;
 
+import java.util.ArrayList;
 public abstract class Player {
-
+	
+	ArrayList<Ship> ships;
 	private int size;
 	private Board playerSquare;
 	public Player(int size) {
+		ships = new ArrayList<Ship>();
 		this.size = size;
 		playerSquare = new Board(size);
 	}
@@ -19,6 +22,10 @@ public abstract class Player {
 	
 	public int getSize(){
 		return size;
+	}
+	
+	public ArrayList<Ship> getShips(){
+		return ships;
 	}
 	
 	public ToEnemy[][] getHitMissSquare(){
