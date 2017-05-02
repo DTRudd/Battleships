@@ -3,13 +3,26 @@ package battleships;
 public abstract class Ship {
 
 	int length;
+	int intactLength;
 	public enum Orientation {UP, DOWN, LEFT, RIGHT};
+	
 	public void sink(){
 		System.out.println("You've sunk this vessel!");
 	}
 	
 	public int getLength(){
 		return length;
+	}
+	
+	public int getIntactLength(){
+		return intactLength;
+	}
+	
+	public void setIntactLength(int len){
+		intactLength = len;
+		if (intactLength == 0){
+			sink();
+		}
 	}
 	
 	public void place(Board board, int x, int y, Orientation dir) throws ImproperPlacementException{
@@ -40,6 +53,7 @@ public abstract class Ship {
 			throw new ImproperPlacementException("Ship placement obstructed.");
 		} else {
 			board.getPoint(x, y).setPrivateStatus(ToPlayer.SHIP_INTACT);
+			board.getPoint(x, y).setOccupyingShip(this);
 		}
 	}
 

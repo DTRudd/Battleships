@@ -4,6 +4,7 @@ public class Point {
 
 	private ToEnemy publicStatus;
 	private ToPlayer privateStatus;
+	private Ship occupyingShip;
 	
 	public ToEnemy getPublicStatus() {
 		return publicStatus;
@@ -18,25 +19,34 @@ public class Point {
 		this.privateStatus = privateStatus;
 	}
 	
+	public Ship getOccupyingShip(){
+		return occupyingShip;
+	}
+	
+	public void setOccupyingShip(Ship inp){
+		occupyingShip = inp;
+	}
+	
 	public ToEnemy defend() throws AttackNotPermittedException {
 		if (this.publicStatus != ToEnemy.UNTOUCHED){
 			throw new AttackNotPermittedException("Already attacked there.");
 		} else {
-			if (this.privateStatus == ToPlayer.EMPTY){
-				this.publicStatus = ToEnemy.MISS;
+			if (privateStatus == ToPlayer.EMPTY){
+				publicStatus = ToEnemy.MISS;
 				return ToEnemy.MISS;
 			} else {
-				this.privateStatus = ToPlayer.SHIP_DESTROYED;
-				this.publicStatus = ToEnemy.HIT;
+				privateStatus = ToPlayer.SHIP_DESTROYED;
+				publicStatus = ToEnemy.HIT;
+				occupyingShip.setIntactLength(occupyingShip.getIntactLength()-1);
 				return ToEnemy.HIT;
 			}
 		}
 	}
 	
 	public char getPrivateCharStatus(){
-		if (this.privateStatus == ToPlayer.EMPTY){
+		if (privateStatus == ToPlayer.EMPTY){
 			return '-';
-		} else if (this.privateStatus == ToPlayer.SHIP_DESTROYED){
+		} else if (privateStatus == ToPlayer.SHIP_DESTROYED){
 			return 'X';
 		} else {
 			return 'O';
