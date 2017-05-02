@@ -11,10 +11,9 @@ public class HumanPlayer extends Player {
 	}
 
 	@Override
-	public Tuple<Integer, Integer> getAttackVector() {
+	public Tuple<Integer, Integer> getAttackVector(Scanner sc) {
 		int xCoord;
 		int yCoord;
-		Scanner sc = new Scanner(System.in);
 		while(true){
 			System.out.println("Enter your attack vector, commander:");
 			String input = sc.next();
@@ -35,13 +34,13 @@ public class HumanPlayer extends Player {
 		}
 
 	public void placeAll(){
-		place(fleet.get(0),0,0,Ship.Orientation.UP);
-		place(fleet.get(1),1,1,Ship.Orientation.UP);
-		place(fleet.get(2),2,2,Ship.Orientation.UP);
-		place(fleet.get(3),3,3,Ship.Orientation.UP);
-		place(fleet.get(4),4,4,Ship.Orientation.UP);
-		place(fleet.get(5),5,5,Ship.Orientation.UP);
-		place(fleet.get(6),6,6,Ship.Orientation.UP);
+		place(fleet.get(0),0,0,Orientation.UP);
+		place(fleet.get(1),1,1,Orientation.UP);
+		place(fleet.get(2),2,2,Orientation.UP);
+		place(fleet.get(3),3,3,Orientation.UP);
+		place(fleet.get(4),4,4,Orientation.UP);
+		place(fleet.get(5),5,5,Orientation.UP);
+		place(fleet.get(6),6,6,Orientation.UP);
 	}
 	
 }

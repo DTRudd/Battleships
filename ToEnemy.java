@@ -8,7 +8,7 @@ public enum ToEnemy {
 	static {
 		HIT.shortStatus = 'X';
 		MISS.shortStatus = 'O';
-		UNTOUCHED.shortStatus = '-';
+		UNTOUCHED.shortStatus = '~';
 	}
 	
 	public char getShortStatus(){

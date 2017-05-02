@@ -2,6 +2,7 @@ package battleships;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 public class Game {
 
@@ -28,7 +29,7 @@ public class Game {
 		for(Map.Entry<Ship, Integer> e : fleet.entrySet()){
 			for(int ii = 0; ii < e.getValue(); ii++){
 				try{
-					Class pC = player1.getClass().getSuperclass();
+					Class<?> pC = player1.getClass().getSuperclass();
 					player1.getFleet().add(e.getKey().getClass().getConstructor(pC).newInstance(player1));
 					player2.getFleet().add(e.getKey().getClass().getConstructor(pC).newInstance(player2));
 				} catch (Exception ex){
@@ -54,7 +55,7 @@ public class Game {
 		for(Map.Entry<Ship, Integer> e : fleet.entrySet()){
 			for(int ii = 0; ii < e.getValue(); ii++){
 				try{
-					Class pC = player1.getClass().getSuperclass();
+					Class<?> pC = player1.getClass().getSuperclass();
 					player1.getFleet().add(e.getKey().getClass().getConstructor(pC).newInstance(player1));
 					player2.getFleet().add(e.getKey().getClass().getConstructor(pC).newInstance(player2));
 				} catch (Exception ex){
@@ -79,12 +80,12 @@ public class Game {
 		return size;
 	}
 	
-	public void turnSchedule(boolean p1Starts){
+	public void turnSchedule(boolean p1Starts,Scanner sc){
 		ToEnemy result;
 		while (true) {
 			try{
 				if (p1Starts){
-					result = turn(player1,player2);
+					result = turn(player1,player2,sc);
 					printState();
 					if (player2.getFleet().size() == 0){
 						System.out.println("Player 1 wins!");
@@ -95,7 +96,7 @@ public class Game {
 						System.out.println("\n\n\nPlayer 2's turn");
 					}
 				} else {
-					result = turn(player2,player1);
+					result = turn(player2,player1,sc);
 					printState();
 					if (player1.getFleet().size() == 0){
 						System.out.println("Player 2 wins!");
@@ -115,18 +116,18 @@ public class Game {
 	public void printState(){
 		for (int ii = size-1; ii > -1; ii--){
 			for (int jj = 0; jj < size; jj++){
-				System.out.print(player1.getShipSquare()[ii][jj].getShortStatus());
+				System.out.print(player1.getShipSquare()[ii][jj].getShortStatus() + " ");
 			}
 			System.out.print("\t");
 			for (int jj = 0; jj < size; jj++){
-				System.out.print(player2.getHitMissSquare()[ii][jj].getShortStatus());
+				System.out.print(player2.getHitMissSquare()[ii][jj].getShortStatus() + " ");
 			}
 			System.out.println("");
 		}
 	}
 	
-	public ToEnemy turn(Player attPlayer, Player defPlayer) throws ArrayIndexOutOfBoundsException, AttackNotPermittedException{
-		Tuple<Integer,Integer> coords = player1.getAttackVector();
+	public ToEnemy turn(Player attPlayer, Player defPlayer, Scanner sc) throws ArrayIndexOutOfBoundsException, AttackNotPermittedException{
+		Tuple<Integer,Integer> coords = player1.getAttackVector(sc);
 		int xCoord = coords.first();
 		int yCoord = coords.second();
 		ToEnemy result;

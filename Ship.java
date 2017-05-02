@@ -5,7 +5,6 @@ public abstract class Ship {
 	int length;
 	int intactLength;
 	Player owner;
-	public enum Orientation {UP, DOWN, LEFT, RIGHT};
 	
 	public Ship(Player p){
 		owner = p;

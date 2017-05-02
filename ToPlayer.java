@@ -9,7 +9,7 @@ public enum ToPlayer {
 	static {
 		SHIP_DESTROYED.shortStatus = 'X';
 		SHIP_INTACT.shortStatus = 'O';
-		EMPTY.shortStatus = '-';
+		EMPTY.shortStatus = '~';
 	}
 	
 	public char getShortStatus(){

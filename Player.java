@@ -1,6 +1,8 @@
 package battleships;
 
 import java.util.ArrayList;
+import java.util.Scanner;
+
 public abstract class Player {
 	
 	ArrayList<Ship> fleet;
@@ -12,7 +14,7 @@ public abstract class Player {
 		playerSquare = new Board(size);
 	}
 	
-	public void place(Ship s, int xCoord, int yCoord, Ship.Orientation orientation){
+	public void place(Ship s, int xCoord, int yCoord, Orientation orientation){
 		try { 
 			s.place(playerSquare, xCoord, xCoord, orientation);
 		} catch (ImproperPlacementException ipe){
@@ -58,5 +60,5 @@ public abstract class Player {
 	
 	public abstract void placeAll();
 	
-	public abstract Tuple<Integer,Integer> getAttackVector();
+	public abstract Tuple<Integer,Integer> getAttackVector(Scanner sc);
 }

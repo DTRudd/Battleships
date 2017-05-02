@@ -43,16 +43,6 @@ public class Point {
 		}
 	}
 	
-	public char getPrivateCharStatus(){
-		if (privateStatus == ToPlayer.EMPTY){
-			return '-';
-		} else if (privateStatus == ToPlayer.SHIP_DESTROYED){
-			return 'X';
-		} else {
-			return 'O';
-		}
-	}
-	
 	public Point() {
 		publicStatus = ToEnemy.UNTOUCHED;
 		privateStatus = ToPlayer.EMPTY;
