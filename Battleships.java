@@ -9,6 +9,7 @@ public class Battleships {
 		g.printState();
 		Scanner sc = new Scanner(System.in);
 		g.turnSchedule(true,sc);
+		sc.close();
 	}
 
 }
