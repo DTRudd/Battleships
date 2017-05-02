@@ -1,16 +1,17 @@
 package battleships;
 
-public class improperPlacementException extends Exception {
-	public improperPlacementException(String message){
+public class ImproperPlacementException extends Exception {
+	static final long serialVersionUID = 132125L;
+	public ImproperPlacementException(String message){
 		super(message);
 	}
-	public improperPlacementException(){
+	public ImproperPlacementException(){
 		super();
 	}
-	public improperPlacementException(Throwable cause){
+	public ImproperPlacementException(Throwable cause){
 		super(cause);
 	}
-	public improperPlacementException(String message, Throwable cause){
+	public ImproperPlacementException(String message, Throwable cause){
 		super(message,cause);
 	}
 }
