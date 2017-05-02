@@ -54,8 +54,9 @@ public class Game {
 		for(Map.Entry<Ship, Integer> e : fleet.entrySet()){
 			for(int ii = 0; ii < e.getValue(); ii++){
 				try{
-					player1.getFleet().add(e.getKey().getClass().getConstructor(player1.getClass().getSuperclass()).newInstance(player1));
-					player2.getFleet().add(e.getKey().getClass().getConstructor(player1.getClass().getSuperclass()).newInstance(player2));
+					Class pC = player1.getClass().getSuperclass();
+					player1.getFleet().add(e.getKey().getClass().getConstructor(pC).newInstance(player1));
+					player2.getFleet().add(e.getKey().getClass().getConstructor(pC).newInstance(player2));
 				} catch (Exception ex){
 					System.out.println("BAD MOJO");
 					System.out.println(ex.getMessage());
