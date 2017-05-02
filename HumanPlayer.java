@@ -34,4 +34,14 @@ public class HumanPlayer extends Player {
 			return new Tuple<Integer,Integer>(xCoord,yCoord);
 		}
 
+	public void placeAll(){
+		place(fleet.get(0),0,0,Ship.Orientation.UP);
+		place(fleet.get(1),1,1,Ship.Orientation.UP);
+		place(fleet.get(2),2,2,Ship.Orientation.UP);
+		place(fleet.get(3),3,3,Ship.Orientation.UP);
+		place(fleet.get(4),4,4,Ship.Orientation.UP);
+		place(fleet.get(5),5,5,Ship.Orientation.UP);
+		place(fleet.get(6),6,6,Ship.Orientation.UP);
+	}
+	
 }

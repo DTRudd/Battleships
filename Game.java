@@ -1,9 +1,13 @@
 package battleships;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Game {
 
 	private Player player1, player2;
 	private int size;
+	private HashMap<Ship,Integer> fleet = new HashMap<Ship,Integer>();
 	public Game(Player player1, Player player2) {
 		this.player1 = player1;
 		this.player2 = player2;
@@ -16,12 +20,50 @@ public class Game {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
+		fleet.put(new PatrolBoat(null), 2);
+		fleet.put(new Battleship(null), 2);
+		fleet.put(new Submarine(null), 1);
+		fleet.put(new Destroyer(null), 1);
+		fleet.put(new Carrier(null), 1);
+		for(Map.Entry<Ship, Integer> e : fleet.entrySet()){
+			for(int ii = 0; ii < e.getValue(); ii++){
+				try{
+					player1.getFleet().add(e.getKey().getClass().getConstructor(player1.getClass().getSuperclass()).newInstance(player1));
+					player2.getFleet().add(e.getKey().getClass().getConstructor(player1.getClass().getSuperclass()).newInstance(player2));
+				} catch (Exception ex){
+					System.out.println("BAD MOJO");
+					System.out.println(ex.getMessage());
+					ex.printStackTrace();
+				}
+			}
+		}
+		player1.placeAll();
+		player2.placeAll();
 	}
 
 	public Game(int size){
 		player1 = new HumanPlayer(size);
 		player2 = new HumanPlayer(size);
 		this.size = size;
+		fleet.put(new PatrolBoat(null), 2);
+		fleet.put(new Battleship(null), 2);
+		fleet.put(new Submarine(null), 1);
+		fleet.put(new Destroyer(null), 1);
+		fleet.put(new Carrier(null), 1);
+		for(Map.Entry<Ship, Integer> e : fleet.entrySet()){
+			for(int ii = 0; ii < e.getValue(); ii++){
+				try{
+					player1.getFleet().add(e.getKey().getClass().getConstructor(player1.getClass().getSuperclass()).newInstance(player1));
+					player2.getFleet().add(e.getKey().getClass().getConstructor(player1.getClass().getSuperclass()).newInstance(player2));
+				} catch (Exception ex){
+					System.out.println("BAD MOJO");
+					System.out.println(ex.getMessage());
+					ex.printStackTrace();
+				}
+			}
+		}
+		player1.placeAll();
+		player2.placeAll();
 	}
 
 	public Player getPlayer1() {
@@ -42,24 +84,24 @@ public class Game {
 				if (p1Starts){
 					result = turn(player1,player2);
 					printState();
+					if (player2.getFleet().size() == 0){
+						System.out.println("Player 1 wins!");
+						break;
+					}
 					if (result != ToEnemy.HIT){
 						p1Starts = false;
 						System.out.println("\n\n\nPlayer 2's turn");
 					}
-					if (player2.getShips().size() == 0){
-						System.out.println("Player 1 wins!");
-						break;
-					}
 				} else {
 					result = turn(player2,player1);
 					printState();
+					if (player1.getFleet().size() == 0){
+						System.out.println("Player 2 wins!");
+						break;
+					}
 					if (result != ToEnemy.HIT){
 						p1Starts = true;
 						System.out.println("\n\n\nPlayer 1's turn");
-					}
-					if (player1.getShips().size() == 0){
-						System.out.println("Player 1 wins!");
-						break;
 					}
 				}
 			} catch (ArrayIndexOutOfBoundsException | AttackNotPermittedException e){

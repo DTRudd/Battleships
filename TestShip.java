@@ -4,8 +4,7 @@ public class TestShip extends Ship {
 
 	public TestShip(Player p) {
 		super(p);
-		length = 2;
-		intactLength = length;
+		intactLength = length = 2;
 	}
 	
 	public void sink(){

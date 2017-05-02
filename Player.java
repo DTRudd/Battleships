@@ -3,11 +3,11 @@ package battleships;
 import java.util.ArrayList;
 public abstract class Player {
 	
-	ArrayList<Ship> ships;
+	ArrayList<Ship> fleet;
 	private int size;
 	private Board playerSquare;
 	public Player(int size) {
-		ships = new ArrayList<Ship>();
+		fleet = new ArrayList<Ship>();
 		this.size = size;
 		playerSquare = new Board(size);
 	}
@@ -24,8 +24,8 @@ public abstract class Player {
 		return size;
 	}
 	
-	public ArrayList<Ship> getShips(){
-		return ships;
+	public ArrayList<Ship> getFleet(){
+		return fleet;
 	}
 	
 	public ToEnemy[][] getHitMissSquare(){
@@ -55,6 +55,8 @@ public abstract class Player {
 	public ToEnemy defend(int xCoord, int yCoord) throws ArrayIndexOutOfBoundsException, AttackNotPermittedException{
 		return playerSquare.getPoint(xCoord, yCoord).defend();
 	}
+	
+	public abstract void placeAll();
 	
 	public abstract Tuple<Integer,Integer> getAttackVector();
 }

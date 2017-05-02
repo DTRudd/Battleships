@@ -27,7 +27,7 @@ public abstract class Ship {
 		intactLength = len;
 		if (intactLength == 0){
 			sink();
-			owner.getShips().remove(this);
+			owner.getFleet().remove(this);
 		}
 	}
 	
