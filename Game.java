@@ -10,7 +10,7 @@ public class Game extends Thread{
 	private Player player1, player2;
 	private int size;
 	private HashMap<Ship,Integer> fleet = new HashMap<Ship,Integer>();
-	private boolean p1Starts;
+	private boolean p1Starts = true;
 	private Scanner gScanner;
 
 	public Game(int size, Scanner sc){
@@ -50,6 +50,7 @@ public class Game extends Thread{
 				}
 			}
 		}
+		printState();
 		player1.placeAll(this,gScanner);
 		player2.placeAll(this,gScanner);
 	}
@@ -139,10 +140,16 @@ public class Game extends Thread{
 		for(char ii = 'a'; ii < 'm'; ii++){
 			System.out.print(ii + " ");
 		}
+		System.out.println();
 	}
 	
 	public ToEnemy turn(Player attPlayer, Player defPlayer) throws ArrayIndexOutOfBoundsException, AttackNotPermittedException{
 		Tuple<Integer,Integer> coords = attPlayer.getAttackVector(this,gScanner);
+		if (attPlayer instanceof Agent){
+			try{
+				Thread.sleep(1750);
+			} catch(Exception e){}
+		}
 		int xCoord = coords.first();
 		int yCoord = coords.second();
 		ToEnemy result;
@@ -163,7 +170,7 @@ public class Game extends Thread{
 		} else {
 
 			if (attPlayer instanceof HumanPlayer){
-				System.out.println("We've missed commander.");
+				System.out.println("We've missed, commander.");
 			} else if (defPlayer instanceof HumanPlayer){
 				System.out.println("Missed us by a mile, commander!");
 			}

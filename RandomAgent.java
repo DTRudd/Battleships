@@ -39,9 +39,6 @@ public class RandomAgent extends Agent {
 
 	@Override
 	public Tuple<Integer, Integer> getAttackVector(Game g, Scanner sc) {
-		try{
-			Thread.sleep(2500);
-		} catch(Exception e){}
 		int xCoord = (int) Math.ceil(Math.random() * 12)-1;
 		int yCoord = (int) Math.ceil(Math.random() * 12)-1;
 		return new Tuple<Integer,Integer>(xCoord,yCoord);
