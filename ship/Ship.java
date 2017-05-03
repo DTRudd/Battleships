@@ -1,19 +1,29 @@
-package battleships;
+package battleships.ship;
 
 import java.util.ArrayList;
 
+import battleships.player.Player;
+import battleships.Board;
+import battleships.ImproperPlacementException;
+import battleships.Orientation;
+import battleships.ToPlayer;
+import battleships.Tuple;
+import battleships.message.BeenSunkMessage;
+import battleships.message.SunkMessage;
+
 public abstract class Ship {
 
-	int length;
-	int intactLength;
-	Player owner;
+	protected int length;
+	protected int intactLength;
+	protected Player owner;
 	
 	public Ship(Player p){
 		owner = p;
 	}
 	
 	public void sink(){
-		System.out.println("You've sunk this vessel!");
+		owner.message(new BeenSunkMessage(this.getClass()));
+		owner.findOpponent().message(new SunkMessage(this.getClass()));
 	}
 	
 	public int getLength(){

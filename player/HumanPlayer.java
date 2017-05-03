@@ -1,13 +1,20 @@
-package battleships;
+package battleships.player;
 
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import battleships.Game;
+import battleships.ImproperPlacementException;
+import battleships.Orientation;
+import battleships.Tuple;
+import battleships.message.*;
+import battleships.ship.Ship;
+
 public class HumanPlayer extends Player {
 
-	public HumanPlayer(int size) {
-		super(size);
+	public HumanPlayer(Game g, int size) {
+		super(g,size);
 	}
 
 	@Override
@@ -79,4 +86,27 @@ public class HumanPlayer extends Player {
 			System.out.println();
 		}
 	}
+	
+	public void message(Message m){
+		if (m instanceof BeenHitMessage){
+			System.out.println("We've been hit!");
+		} else if (m instanceof BeenMissedMessage){
+			System.out.println("Ha!  Missed us by a mile, commander!");
+		} else if (m instanceof BeenSunkMessage){
+			System.out.println("They've sunk our " + ((BeenSunkMessage) m).getShipClass().getSimpleName() + "!");
+		} else if (m instanceof HitMessage){
+			System.out.println("We've scored a direct hit, commander!");
+		} else if (m instanceof IllegalMessage){
+			System.out.println("We can't go there, commander.");
+		} else if (m instanceof LossMessage){
+			System.out.println("Disgrace!  Disgrace!  The battle is lost!");
+		} else if (m instanceof MissMessage){
+			System.out.println("A miss!  The beggars moved, I saw it, I saw it!");
+		} else if (m instanceof SunkMessage){
+			System.out.println("Commander, their " + ((SunkMessage) m).getShipClass().getSimpleName() + " has been sunk!");
+		} else if (m instanceof WinMessage){
+			System.out.println("We've got 'em, commander, every one!  The day is ours!");
+		}
+	}
+	
 }

@@ -3,6 +3,17 @@ package battleships;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+
+import battleships.player.*;
+import battleships.player.agent.*;
+import battleships.ship.Battleship;
+import battleships.ship.Carrier;
+import battleships.ship.Destroyer;
+import battleships.ship.PatrolBoat;
+import battleships.ship.Ship;
+import battleships.ship.Submarine;
+import battleships.message.*;
+
 import java.lang.reflect.Constructor;
 
 public class Game extends Thread{
@@ -14,16 +25,16 @@ public class Game extends Thread{
 	private Scanner gScanner;
 
 	public Game(int size, Scanner sc){
-		player1 = new HumanPlayer(size);
-		player2 = new RandomAgent(size);
+		player1 = new HumanPlayer(this,size);
+		player2 = new SequentialAgent(this,size);
 		gScanner = sc;
 		this.size = size;
 		addFleet();
 	}
 	
 	public Game(int size){
-		player1 = new RandomAgent(size);
-		player2 = new RandomAgent(size);
+		player1 = new RandomAgent(this,size);
+		player2 = new RandomAgent(this,size);
 		this.size = size;
 		gScanner = new Scanner(System.in);
 		addFleet();
@@ -38,7 +49,8 @@ public class Game extends Thread{
 		for(Map.Entry<Ship, Integer> e : fleet.entrySet()){
 			for(int ii = 0; ii < e.getValue(); ii++){
 				try{
-					Class<?> pC = player1.getClass().getSuperclass();
+					Player x = new HumanPlayer(this,size);
+					Class<?> pC = x.getClass().getSuperclass();
 					Class<?> sC = e.getKey().getClass();
 					Constructor<?> cC = sC.getConstructor(pC);
 					player1.getFleet().add((Ship)cC.newInstance(player1));
@@ -83,23 +95,23 @@ public class Game extends Thread{
 					result = turn(player1,player2);
 					printState();
 					if (player2.getFleet().size() == 0){
-						System.out.println("Player 1 wins!");
+						player1.message(new WinMessage());
+						player2.message(new LossMessage());
 						break;
 					}
 					if (result != ToEnemy.HIT){
 						p1Starts = false;
-						System.out.println("\n\n\nPlayer 2's turn");
 					}
 				} else {
 					result = turn(player2,player1);
 					printState();
 					if (player1.getFleet().size() == 0){
-						System.out.println("Player 2 wins!");
+						player1.message(new LossMessage());
+						player2.message(new WinMessage());
 						break;
 					}
 					if (result != ToEnemy.HIT){
 						p1Starts = true;
-						System.out.println("\n\n\nPlayer 1's turn");
 					}
 				}
 			} catch (ArrayIndexOutOfBoundsException | AttackNotPermittedException e){
@@ -158,22 +170,16 @@ public class Game extends Thread{
 		} catch (ArrayIndexOutOfBoundsException | AttackNotPermittedException e){
 			if (attPlayer instanceof HumanPlayer){
 				System.out.println("We can't attack there, commander.");
+				attPlayer.message(new IllegalMessage());
 			}
 			throw e;
 		}
 		if (result == ToEnemy.HIT){
-			if (attPlayer instanceof HumanPlayer){
-				System.out.println("We've scored a hit, commander!");
-			} else if (defPlayer instanceof HumanPlayer){
-				System.out.println("We've been hit, commander!");
-			}
+			attPlayer.message(new HitMessage(coords));
+			defPlayer.message(new BeenHitMessage(coords));
 		} else {
-
-			if (attPlayer instanceof HumanPlayer){
-				System.out.println("We've missed, commander.");
-			} else if (defPlayer instanceof HumanPlayer){
-				System.out.println("Missed us by a mile, commander!");
-			}
+			attPlayer.message(new MissMessage(coords));
+			defPlayer.message(new BeenMissedMessage(coords));
 		}
 		return result;
 	}

@@ -1,5 +1,7 @@
 package battleships;
 
+import battleships.ship.Ship;
+
 public class Point {
 
 	private ToEnemy publicStatus;

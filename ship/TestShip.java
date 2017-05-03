@@ -1,4 +1,6 @@
-package battleships;
+package battleships.ship;
+
+import battleships.player.Player;
 
 public class TestShip extends Ship {
 
@@ -6,9 +8,4 @@ public class TestShip extends Ship {
 		super(p);
 		intactLength = length = 2;
 	}
-	
-	public void sink(){
-		System.out.println("You've sunk my test ship!");
-	}
-	
 }

@@ -1,17 +1,41 @@
-package battleships;
+package battleships.player;
 
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import battleships.AttackNotPermittedException;
+import battleships.Board;
+import battleships.Game;
+import battleships.ImproperPlacementException;
+import battleships.Orientation;
+import battleships.ToEnemy;
+import battleships.Tuple;
+import battleships.message.*;
+import battleships.ship.Ship;
+
 public abstract class Player {
 	
-	ArrayList<Ship> fleet;
-	private int size;
-	private Board playerSquare;
-	public Player(int size) {
+	protected ArrayList<Ship> fleet;
+	protected int size;
+	protected Board playerSquare;
+	protected Game g;
+	public Player(Game g,int size) {
 		fleet = new ArrayList<Ship>();
 		this.size = size;
 		playerSquare = new Board(size);
+		this.g = g;
+	}
+	
+	public Game getGame(){
+		return g;
+	}
+	
+	public Player findOpponent(){
+		if (g.getPlayer1().equals(this)){
+			return g.getPlayer2();
+		} else {
+			return g.getPlayer1();
+		}
 	}
 	
 	public void place(Ship s, int xCoord, int yCoord, Orientation orientation) throws ImproperPlacementException, ArrayIndexOutOfBoundsException{
@@ -61,4 +85,6 @@ public abstract class Player {
 	public abstract void placeAll(Game g, Scanner sc);
 	
 	public abstract Tuple<Integer,Integer> getAttackVector(Game g, Scanner sc);
+	
+	public abstract void message(Message m);
 }
