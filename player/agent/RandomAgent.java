@@ -7,16 +7,7 @@ import battleships.Game;
 import battleships.ImproperPlacementException;
 import battleships.Orientation;
 import battleships.Tuple;
-import battleships.message.BeenHitMessage;
-import battleships.message.BeenMissedMessage;
-import battleships.message.BeenSunkMessage;
-import battleships.message.HitMessage;
-import battleships.message.IllegalMessage;
-import battleships.message.LossMessage;
 import battleships.message.Message;
-import battleships.message.MissMessage;
-import battleships.message.SunkMessage;
-import battleships.message.WinMessage;
 import battleships.ship.Ship;
 
 public class RandomAgent extends Agent {
@@ -67,16 +58,6 @@ public class RandomAgent extends Agent {
 	}
 
 	public void message(Message m){
-		if (m instanceof BeenHitMessage){
-		} else if (m instanceof BeenMissedMessage){
-		} else if (m instanceof BeenSunkMessage){
-		} else if (m instanceof HitMessage){
-		} else if (m instanceof IllegalMessage){
-		} else if (m instanceof LossMessage){
-		} else if (m instanceof MissMessage){
-		} else if (m instanceof SunkMessage){
-		} else if (m instanceof WinMessage){
-		}
 	}
 	
 }

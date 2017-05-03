@@ -7,17 +7,10 @@ import java.util.Stack;
 import battleships.Game;
 import battleships.ImproperPlacementException;
 import battleships.Orientation;
+import battleships.ToEnemy;
 import battleships.Tuple;
-import battleships.message.BeenHitMessage;
-import battleships.message.BeenMissedMessage;
-import battleships.message.BeenSunkMessage;
 import battleships.message.HitMessage;
-import battleships.message.IllegalMessage;
-import battleships.message.LossMessage;
 import battleships.message.Message;
-import battleships.message.MissMessage;
-import battleships.message.SunkMessage;
-import battleships.message.WinMessage;
 import battleships.ship.Ship;
 
 public class HunterKillerAgent extends Agent {
@@ -29,6 +22,7 @@ public class HunterKillerAgent extends Agent {
 		super(g,size);
 		paritySize = 2;
 		killStack = new Stack<Tuple<Integer,Integer>>();
+		avails = new ArrayList<Tuple<Integer,Integer>>();
 		for(int ii = 0; ii < size; ii++){
 			for(int jj = 0; jj < size; jj++){
 				avails.add(new Tuple<Integer,Integer>(ii,jj));
@@ -80,20 +74,28 @@ public class HunterKillerAgent extends Agent {
 	}
 	
 	public Tuple<Integer,Integer> killAttackVector(){
-		return new Tuple<Integer,Integer>(-1,-1);
+		Tuple<Integer,Integer> outp = killStack.pop();
+		avails.remove(outp);
+		return outp;
 	}
 	
 	public void message(Message m){
-		if (m instanceof BeenHitMessage){
-		} else if (m instanceof BeenMissedMessage){
-		} else if (m instanceof BeenSunkMessage){
-		} else if (m instanceof HitMessage){
-		} else if (m instanceof IllegalMessage){
-		} else if (m instanceof LossMessage){
-		} else if (m instanceof MissMessage){
-		} else if (m instanceof SunkMessage){
-		} else if (m instanceof WinMessage){
+		if (m instanceof HitMessage){
+			Tuple<Integer,Integer> centrePoint = ((HitMessage) m).getAttackedSquare();
+			addToKillStack(new Tuple<Integer,Integer>(centrePoint.first()+1,centrePoint.second()));
+			addToKillStack(new Tuple<Integer,Integer>(centrePoint.first()-1,centrePoint.second()));
+			addToKillStack(new Tuple<Integer,Integer>(centrePoint.first(),centrePoint.second()+1));
+			addToKillStack(new Tuple<Integer,Integer>(centrePoint.first(),centrePoint.second()-1));
 		}
+	}
+	
+	public void addToKillStack(Tuple<Integer,Integer> point){
+		if (point.first() >= g.getSize() || point.first() < 0 || point.second() >= g.getSize() || point.second() < 0){
+		} else if (findOpponent().getHitMissSquare()[point.first()][point.second()].getShortStatus() != ToEnemy.UNTOUCHED.getShortStatus()){
+		} else {
+			killStack.push(point);
+		}
+		
 	}
 	
 }
