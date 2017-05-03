@@ -14,12 +14,8 @@ public abstract class Player {
 		playerSquare = new Board(size);
 	}
 	
-	public void place(Ship s, int xCoord, int yCoord, Orientation orientation){
-		try { 
-			s.place(playerSquare, xCoord, xCoord, orientation);
-		} catch (ImproperPlacementException ipe){
-			ipe.printStackTrace();
-		}
+	public void place(Ship s, int xCoord, int yCoord, Orientation orientation) throws ImproperPlacementException, ArrayIndexOutOfBoundsException{
+		s.place(playerSquare, xCoord, yCoord, orientation);
 	}
 	
 	public int getSize(){
@@ -40,11 +36,15 @@ public abstract class Player {
 		return outp;
 	}
 	
-	public ToPlayer[][] getShipSquare(){
-		ToPlayer[][] outp = new ToPlayer[size][size];
+	public String[][] getLocationSquare(){
+		String[][] outp = new String[size][size];
 		for (int ii = 0; ii < size; ii++){
 			for (int jj = 0; jj < size; jj++){
-				outp[ii][jj] = playerSquare.getPoint(ii, jj).getPrivateStatus();
+				if (playerSquare.getPoint(ii, jj).getPublicStatus() == ToEnemy.MISS){
+					outp[ii][jj] = Character.toString('-');
+				} else {
+					outp[ii][jj] = Character.toString(playerSquare.getPoint(ii, jj).getPrivateStatus().getShortStatus());
+				}
 			}
 		}
 		return outp;
@@ -58,7 +58,7 @@ public abstract class Player {
 		return playerSquare.getPoint(xCoord, yCoord).defend();
 	}
 	
-	public abstract void placeAll();
+	public abstract void placeAll(Game g, Scanner sc);
 	
-	public abstract Tuple<Integer,Integer> getAttackVector(Scanner sc);
+	public abstract Tuple<Integer,Integer> getAttackVector(Game g, Scanner sc);
 }

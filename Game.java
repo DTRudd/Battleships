@@ -3,50 +3,33 @@ package battleships;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.lang.reflect.Constructor;
 
-public class Game {
+public class Game extends Thread{
 
 	private Player player1, player2;
 	private int size;
 	private HashMap<Ship,Integer> fleet = new HashMap<Ship,Integer>();
-	public Game(Player player1, Player player2) {
-		this.player1 = player1;
-		this.player2 = player2;
-		try {
-			if (player1.getSize() != player2.getSize()){
-				throw new Exception("Player board sizes not equal");
-			}
-			size = player1.getSize();
-		} catch (Exception e){
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-		}
-		fleet.put(new PatrolBoat(null), 2);
-		fleet.put(new Battleship(null), 2);
-		fleet.put(new Submarine(null), 1);
-		fleet.put(new Destroyer(null), 1);
-		fleet.put(new Carrier(null), 1);
-		for(Map.Entry<Ship, Integer> e : fleet.entrySet()){
-			for(int ii = 0; ii < e.getValue(); ii++){
-				try{
-					Class<?> pC = player1.getClass().getSuperclass();
-					player1.getFleet().add(e.getKey().getClass().getConstructor(pC).newInstance(player1));
-					player2.getFleet().add(e.getKey().getClass().getConstructor(pC).newInstance(player2));
-				} catch (Exception ex){
-					System.out.println("BAD MOJO");
-					System.out.println(ex.getMessage());
-					ex.printStackTrace();
-				}
-			}
-		}
-		player1.placeAll();
-		player2.placeAll();
-	}
+	private boolean p1Starts;
+	private Scanner gScanner;
 
-	public Game(int size){
+	public Game(int size, Scanner sc){
 		player1 = new HumanPlayer(size);
-		player2 = new HumanPlayer(size);
+		player2 = new RandomAgent(size);
+		gScanner = sc;
 		this.size = size;
+		addFleet();
+	}
+	
+	public Game(int size){
+		player1 = new RandomAgent(size);
+		player2 = new RandomAgent(size);
+		this.size = size;
+		gScanner = new Scanner(System.in);
+		addFleet();
+	}
+	
+	public void addFleet(){
 		fleet.put(new PatrolBoat(null), 2);
 		fleet.put(new Battleship(null), 2);
 		fleet.put(new Submarine(null), 1);
@@ -56,8 +39,10 @@ public class Game {
 			for(int ii = 0; ii < e.getValue(); ii++){
 				try{
 					Class<?> pC = player1.getClass().getSuperclass();
-					player1.getFleet().add(e.getKey().getClass().getConstructor(pC).newInstance(player1));
-					player2.getFleet().add(e.getKey().getClass().getConstructor(pC).newInstance(player2));
+					Class<?> sC = e.getKey().getClass();
+					Constructor<?> cC = sC.getConstructor(pC);
+					player1.getFleet().add((Ship)cC.newInstance(player1));
+					player2.getFleet().add((Ship)cC.newInstance(player2));
 				} catch (Exception ex){
 					System.out.println("BAD MOJO");
 					System.out.println(ex.getMessage());
@@ -65,8 +50,8 @@ public class Game {
 				}
 			}
 		}
-		player1.placeAll();
-		player2.placeAll();
+		player1.placeAll(this,gScanner);
+		player2.placeAll(this,gScanner);
 	}
 
 	public Player getPlayer1() {
@@ -76,16 +61,25 @@ public class Game {
 		return player2;
 	}
 
+	public Player getOpponent(Player inp){
+		if (inp.equals(player1)){
+			return player2;
+		} else{
+			return player1;
+		}
+	}
+	
 	public int getSize(){
 		return size;
 	}
 	
-	public void turnSchedule(boolean p1Starts,Scanner sc){
+	public void run(){
 		ToEnemy result;
 		while (true) {
+			System.out.println();
 			try{
 				if (p1Starts){
-					result = turn(player1,player2,sc);
+					result = turn(player1,player2);
 					printState();
 					if (player2.getFleet().size() == 0){
 						System.out.println("Player 1 wins!");
@@ -96,7 +90,7 @@ public class Game {
 						System.out.println("\n\n\nPlayer 2's turn");
 					}
 				} else {
-					result = turn(player2,player1,sc);
+					result = turn(player2,player1);
 					printState();
 					if (player1.getFleet().size() == 0){
 						System.out.println("Player 2 wins!");
@@ -114,33 +108,65 @@ public class Game {
 	}
 	
 	public void printState(){
+		System.out.print("  ");
+		for(char ii = 'a'; ii < 'm'; ii++){
+			System.out.format(" " + ii);
+		}
+		System.out.print("\t  ");
+		for(char ii = 'a'; ii < 'm'; ii++){
+			System.out.print(" " + ii );
+		}
+		System.out.println();
 		for (int ii = size-1; ii > -1; ii--){
+			System.out.format("%2d ",ii+1);
 			for (int jj = 0; jj < size; jj++){
-				System.out.print(player1.getShipSquare()[ii][jj].getShortStatus() + " ");
+				System.out.print(player1.getLocationSquare()[ii][jj] + " ");
 			}
+			System.out.format("%2d",ii+1);
 			System.out.print("\t");
+			System.out.format("%2d ",ii+1);
 			for (int jj = 0; jj < size; jj++){
 				System.out.print(player2.getHitMissSquare()[ii][jj].getShortStatus() + " ");
 			}
-			System.out.println("");
+			System.out.format("%2d",ii+1);
+			System.out.println();
+		}
+		System.out.print("   ");
+		for(char ii = 'a'; ii < 'm'; ii++){
+			System.out.print(ii + " ");
+		}
+		System.out.print("\t   ");
+		for(char ii = 'a'; ii < 'm'; ii++){
+			System.out.print(ii + " ");
 		}
 	}
 	
-	public ToEnemy turn(Player attPlayer, Player defPlayer, Scanner sc) throws ArrayIndexOutOfBoundsException, AttackNotPermittedException{
-		Tuple<Integer,Integer> coords = player1.getAttackVector(sc);
+	public ToEnemy turn(Player attPlayer, Player defPlayer) throws ArrayIndexOutOfBoundsException, AttackNotPermittedException{
+		Tuple<Integer,Integer> coords = attPlayer.getAttackVector(this,gScanner);
 		int xCoord = coords.first();
 		int yCoord = coords.second();
 		ToEnemy result;
 		try{
 			result = attPlayer.attack(defPlayer, xCoord, yCoord);
 		} catch (ArrayIndexOutOfBoundsException | AttackNotPermittedException e){
-			System.out.println("We can't attack there, commander.");
+			if (attPlayer instanceof HumanPlayer){
+				System.out.println("We can't attack there, commander.");
+			}
 			throw e;
 		}
 		if (result == ToEnemy.HIT){
-			System.out.println("We've scored a hit, commander!");
+			if (attPlayer instanceof HumanPlayer){
+				System.out.println("We've scored a hit, commander!");
+			} else if (defPlayer instanceof HumanPlayer){
+				System.out.println("We've been hit, commander!");
+			}
 		} else {
-			System.out.println("We've missed commander.");
+
+			if (attPlayer instanceof HumanPlayer){
+				System.out.println("We've missed commander.");
+			} else if (defPlayer instanceof HumanPlayer){
+				System.out.println("Missed us by a mile, commander!");
+			}
 		}
 		return result;
 	}
