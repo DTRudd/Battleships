@@ -130,7 +130,6 @@ public class HunterKillerAgent extends Agent {
 					break;
 				}
 			}
-			((SunkMessage) m).getShipClass();
 		}
 	}
 	
