@@ -35,7 +35,7 @@ public class Game extends Thread{
 	
 	public Game(int size){
 		player1 = new HunterKillerAgent(this,size);
-		player2 = new RandomAgent(this,size);
+		player2 = new HunterKillerAgent(this,size);
 		this.size = size;
 		gScanner = new Scanner(System.in);
 		addFleet();
@@ -100,7 +100,7 @@ public class Game extends Thread{
 					result = turn(player1,player2);
 					printState();
 					if (player2.getFleet().size() == 0){
-					//	System.out.println(player1.getClass().getSimpleName() + " won in " + Math.ceil(turns/2) + "turns.");
+						System.out.println(player1.getClass().getSimpleName() + " won in " + Math.ceil(turns/2) + "turns.");
 						player1.message(new WinMessage());
 						player2.message(new LossMessage());
 						break;
@@ -112,7 +112,7 @@ public class Game extends Thread{
 					result = turn(player2,player1);
 					printState();
 					if (player1.getFleet().size() == 0){
-						//System.out.println(player2.getClass().getSimpleName() + " won in " +Math.ceil(turns/2) + "turns.");
+						System.out.println(player2.getClass().getSimpleName() + " won in " +Math.ceil(turns/2) + "turns.");
 						player1.message(new LossMessage());
 						player2.message(new WinMessage());
 						break;
@@ -127,7 +127,7 @@ public class Game extends Thread{
 		}
 	}
 	
-	public void printState(){/*
+	public void printState(){
 		System.out.print("  ");
 		for(char ii = 'a'; ii < 'm'; ii++){
 			System.out.format(" " + ii);
@@ -159,7 +159,7 @@ public class Game extends Thread{
 		for(char ii = 'a'; ii < 'm'; ii++){
 			System.out.print(ii + " ");
 		}
-		System.out.println();*/
+		System.out.println();
 	}
 	
 	public ToEnemy turn(Player attPlayer, Player defPlayer) throws ArrayIndexOutOfBoundsException, AttackNotPermittedException{
@@ -167,7 +167,7 @@ public class Game extends Thread{
 		Tuple<Integer,Integer> coords = attPlayer.getAttackVector(this,gScanner);
 		if (attPlayer instanceof Agent){
 			try{
-		//		Thread.sleep(750);
+				Thread.sleep(750);
 			} catch(Exception e){}
 		}
 		int xCoord = coords.first();
