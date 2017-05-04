@@ -34,7 +34,7 @@ public class Game extends Thread{
 	}
 	
 	public Game(int size){
-		player1 = new HunterKillerAgent(this,size);
+		player1 = new SequentialAgent(this,size);
 		player2 = new RandomAgent(this,size);
 		this.size = size;
 		gScanner = new Scanner(System.in);
