@@ -5,7 +5,7 @@ public class Init {
 
 	public static void main(String[] Args){
 		Scanner sc = new Scanner(System.in);
-		int[] bigAvgTotal = new int[62500];
+		int[] bigAvgTotal = new int[6250000];
 		for(int ii = 0; ii < 100; ii++){
 			Game[] games = new Game[16];
 			for(int jj = 0; jj < 16; jj++){
