@@ -10,6 +10,7 @@ import battleships.ToEnemy;
 import battleships.Tuple;
 import battleships.message.Message;
 import battleships.message.SunkMessage;
+import battleships.message.HitMessage;
 import battleships.ship.Ship;
 
 public class ProbDensityAgent extends Agent{
@@ -17,11 +18,13 @@ public class ProbDensityAgent extends Agent{
 	protected ArrayList<Tuple<Integer,Integer>> avails;
 	protected ArrayList<Ship> enemyFleet;
 	protected int[][] probBoard;
+	protected int unspentHits;
 	
 	public ProbDensityAgent(Game g, int size) {
 		super(g,size);
 		avails = new ArrayList<Tuple<Integer,Integer>>();
 		probBoard = new int[size][size];
+		unspentHits = 0;
 		for(int ii = 0; ii < size; ii++){
 			for(int jj = 0; jj < size; jj++){
 				avails.add(new Tuple<Integer,Integer>(ii,jj));
@@ -73,6 +76,8 @@ public class ProbDensityAgent extends Agent{
 		}
 	}
 
+	/* STAYS IN TARGET MODE UNTIL ALL HITS HAVE BEEN ACCOUNTED FOR BY SINKING.*/
+	
 	public void probBoardRight(Ship inp){
 		for(int ii = 0; ii < size; ii++){
 			for(int jj = 0; jj < size; jj++){
@@ -146,7 +151,11 @@ public class ProbDensityAgent extends Agent{
 		if (enemyFleet == null){
 			enemyFleet = findOpponent().getFleet();
 		}
-		updateProbBoard();
+		if (unspentHits == 0){
+			huntUpdateProbBoard();
+		} else {
+			killUpdateProbBoard();
+		}
 		for(int ii = size-1; ii > -1; ii--){
 			for (int jj = 0; jj < size; jj++){
 				System.out.print(probBoard[ii][jj] + "\t");
@@ -172,13 +181,17 @@ public class ProbDensityAgent extends Agent{
 
 	@Override
 	public void message(Message m) {
-		if (m instanceof SunkMessage){
+		if (m instanceof HitMessage){
+			unspentHits++;
+		} else if (m instanceof SunkMessage){
+			unspentHits -= ((SunkMessage) m).getLength();
 			for (Ship s : enemyFleet){
 				if (s.getClass().equals(((SunkMessage) m).getShipClass())){
 					enemyFleet.remove(s);
 					break;
 				}
 			}
+			sinkShips();
 		}
 	}
 }
