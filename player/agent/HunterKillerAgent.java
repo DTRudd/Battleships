@@ -11,23 +11,28 @@ import battleships.ToEnemy;
 import battleships.Tuple;
 import battleships.message.HitMessage;
 import battleships.message.Message;
+import battleships.message.SunkMessage;
 import battleships.ship.Ship;
 
 public class HunterKillerAgent extends Agent {
 
 	protected int paritySize;
+	protected int[][] parityBoard;
 	protected Stack<Tuple<Integer,Integer>> killStack;
 	protected ArrayList<Tuple<Integer,Integer>> avails;
+	protected ArrayList<Ship> enemyFleet;
 	public HunterKillerAgent(Game g, int size) {
 		super(g,size);
 		paritySize = 2;
 		killStack = new Stack<Tuple<Integer,Integer>>();
 		avails = new ArrayList<Tuple<Integer,Integer>>();
+		parityBoard = new int[size][size];
 		for(int ii = 0; ii < size; ii++){
 			for(int jj = 0; jj < size; jj++){
 				avails.add(new Tuple<Integer,Integer>(ii,jj));
 			}
 		}
+		updateParityBoard(2);
 	}
 
 	@Override
@@ -61,6 +66,14 @@ public class HunterKillerAgent extends Agent {
 
 	@Override
 	public Tuple<Integer, Integer> getAttackVector(Game g, Scanner sc) {
+		if (enemyFleet == null){
+			enemyFleet = findOpponent().getFleet();
+		}
+		int tmp = enemyFleet.stream().map(Ship::getLength).reduce(Math::min).get();
+		if (tmp != paritySize){
+			paritySize = tmp;
+			updateParityBoard(paritySize);
+		}
 		if (killStack.isEmpty()){
 			return huntAttackVector();
 		} else {
@@ -68,8 +81,32 @@ public class HunterKillerAgent extends Agent {
 		}
 	}
 
+	public void updateParityBoard(int inp){
+		int startNo = 0;
+		int pointNo;
+		for(int ii = 0; ii < g.getSize(); ii++){
+			if (startNo != inp){
+				startNo++;
+			} else {
+				startNo = 1;
+			}
+			pointNo = startNo;
+			for (int jj = 0; jj < g.getSize(); jj++){
+				parityBoard[ii][jj] = pointNo;
+				if (pointNo != inp){
+					pointNo++;
+				} else {
+					pointNo = 1;
+				}
+			}
+		}
+	}
+	
 	public Tuple<Integer, Integer> huntAttackVector(){
 		int ii = (int) Math.ceil(Math.random() * avails.size())-1;
+		while (parityBoard[avails.get(ii).first()][avails.get(ii).second()] != 1){
+			ii = (int) Math.ceil(Math.random() * avails.size())-1;
+		}
 		return avails.remove(ii);
 	}
 	
@@ -86,12 +123,22 @@ public class HunterKillerAgent extends Agent {
 			addToKillStack(new Tuple<Integer,Integer>(centrePoint.first()-1,centrePoint.second()));
 			addToKillStack(new Tuple<Integer,Integer>(centrePoint.first(),centrePoint.second()+1));
 			addToKillStack(new Tuple<Integer,Integer>(centrePoint.first(),centrePoint.second()-1));
+		} else if (m instanceof SunkMessage){
+			for (Ship s : enemyFleet){
+				if (s.getClass().equals(((SunkMessage) m).getShipClass())){
+					enemyFleet.remove(s);
+					break;
+				}
+			}
+			((SunkMessage) m).getShipClass();
 		}
 	}
 	
 	public void addToKillStack(Tuple<Integer,Integer> point){
 		if (point.first() >= g.getSize() || point.first() < 0 || point.second() >= g.getSize() || point.second() < 0){
+			//Do nothing
 		} else if (findOpponent().getHitMissSquare()[point.first()][point.second()].getShortStatus() != ToEnemy.UNTOUCHED.getShortStatus()){
+			//Do nothing
 		} else {
 			killStack.push(point);
 		}
