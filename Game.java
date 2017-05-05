@@ -94,7 +94,6 @@ public class Game extends Thread{
 	public void run(){
 		ToEnemy result;
 		while (true) {
-			System.out.println();
 			try{
 				if (p1Starts){
 					result = turn(player1,player2);
@@ -176,10 +175,7 @@ public class Game extends Thread{
 		try{
 			result = attPlayer.attack(defPlayer, xCoord, yCoord);
 		} catch (ArrayIndexOutOfBoundsException | AttackNotPermittedException e){
-			if (attPlayer instanceof HumanPlayer){
-				System.out.println("We can't attack there, commander.");
-				attPlayer.message(new IllegalMessage());
-			}
+			attPlayer.message(new IllegalMessage());
 			throw e;
 		}
 		if (result == ToEnemy.HIT){

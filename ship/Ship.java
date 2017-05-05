@@ -13,7 +13,7 @@ import battleships.message.SunkMessage;
 
 public abstract class Ship {
 
-	protected static int length;
+	protected int length;
 	protected int intactLength;
 	protected Player owner;
 	
@@ -23,14 +23,10 @@ public abstract class Ship {
 	
 	public void sink(){
 		owner.message(new BeenSunkMessage(this.getClass()));
-		owner.findOpponent().message(new SunkMessage(this.getClass()));
+		owner.findOpponent().message(new SunkMessage(this.getClass(),length));
 	}
 	
 	public int getLength(){
-		return length;
-	}
-	
-	public int getStaticLength(){
 		return length;
 	}
 	

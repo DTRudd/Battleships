@@ -19,75 +19,107 @@ public class ProbDensityAgent extends Agent{
 	protected ArrayList<Ship> enemyFleet;
 	protected int[][] probBoard;
 	protected int unspentHits;
+	protected boolean[][] sunkBoard;
 	
 	public ProbDensityAgent(Game g, int size) {
 		super(g,size);
 		avails = new ArrayList<Tuple<Integer,Integer>>();
 		probBoard = new int[size][size];
+		sunkBoard = new boolean[size][size];
 		unspentHits = 0;
 		for(int ii = 0; ii < size; ii++){
 			for(int jj = 0; jj < size; jj++){
 				avails.add(new Tuple<Integer,Integer>(ii,jj));
+				sunkBoard[ii][jj] = false;
 			}
 		}
 	}
 	
-	
-	
-	public void updateProbBoard(){
+	public void killUpdateProbBoard(){
 		for(int ii = 0; ii < size; ii++){
 			for(int jj = 0; jj < size; jj++){
 				probBoard[ii][jj] = 0;
 			}
 		}
-		enemyFleet.forEach(this::probBoardRight);
-		enemyFleet.forEach(this::probBoardUp);
-		boardHitModify();
+		enemyFleet.forEach(this::killRight);
+		enemyFleet.forEach(this::killUp);
 	}
 	
-	public void boardHitModify(){
-		ToEnemy[][] hmBoard = findOpponent().getHitMissSquare();
+	public void huntUpdateProbBoard(){
+		for(int ii = 0; ii < size; ii++){
+			for(int jj = 0; jj < size; jj++){
+				probBoard[ii][jj] = 0;
+			}
+		}
+		enemyFleet.forEach(this::huntRight);
+		enemyFleet.forEach(this::huntUp);
+	}
+	
+	/* STAYS IN TARGET MODE UNTIL ALL HITS HAVE BEEN ACCOUNTED FOR BY SINKING.*/
+
+	public void killRight(Ship inp){
 		for (int ii = 0; ii < size; ii++){
 			for (int jj = 0; jj < size; jj++){
-				three: for (int kk = 0; kk < enemyFleet.stream().map(Ship::getLength).reduce(Math::max).get(); kk++){
-					if (jj+kk < size){
-						if(hmBoard[ii][jj+kk].equals(ToEnemy.HIT)){
-							probBoard[ii][jj] *= 10;
-							break three;
-						}
-					} else if (ii+kk < size){
-						if(hmBoard[ii+kk][jj].equals(ToEnemy.HIT)){
-							probBoard[ii][jj] *= 10;
-							break three;
-						}
-					} else if (ii-kk > -1){
-						if (hmBoard[ii-kk][jj].equals(ToEnemy.HIT)){
-							probBoard[ii][jj] *= 10;
-							break three;
-						}
-					} else if (jj-kk < size){
-						if (hmBoard[ii][jj-kk].equals(ToEnemy.HIT)){
-							probBoard[ii][jj] *= 10;
-							break three;
-						}
+				boolean fits = true;
+				boolean fitsHits = false;
+				for (int kk = 0; kk < inp.getLength(); kk++){
+					if (jj+kk >= size || findOpponent().getHitMissSquare()[ii][jj+kk] == ToEnemy.MISS || sunkBoard[ii][jj+kk]){
+						fits = false;
 					}
+					if (jj+kk < size && findOpponent().getHitMissSquare()[ii][jj+kk] == ToEnemy.HIT){
+						fitsHits = true;
+					}
+				}
+				if (fits){
+					for (int kk = 0; kk < inp.getLength(); kk++){
+						probBoard[ii][jj+kk] += fitsHits ? 100 : 1;
+					}
+				}
+				if (findOpponent().getHitMissSquare()[ii][jj] == ToEnemy.HIT){
+					probBoard[ii][jj] = 0;
 				}
 			}
 		}
 	}
-
-	/* STAYS IN TARGET MODE UNTIL ALL HITS HAVE BEEN ACCOUNTED FOR BY SINKING.*/
 	
-	public void probBoardRight(Ship inp){
-		for(int ii = 0; ii < size; ii++){
-			for(int jj = 0; jj < size; jj++){
+	public void killUp(Ship inp){
+		for (int ii = 0; ii < size; ii++){
+			for (int jj = 0; jj < size; jj++){
 				boolean fits = true;
+				boolean fitsHits = false;
 				for (int kk = 0; kk < inp.getLength(); kk++){
-					if (jj+kk >= size || findOpponent().getHitMissSquare()[ii][jj+kk] != ToEnemy.UNTOUCHED)
+					if (ii+kk >= size || findOpponent().getHitMissSquare()[ii+kk][jj] == ToEnemy.MISS || sunkBoard[ii+kk][jj]){
 						fits = false;
+					}
+					if (ii+kk < size){
+						if (findOpponent().getHitMissSquare()[ii+kk][jj] == ToEnemy.HIT && !sunkBoard[ii][jj]){
+							fitsHits = true;
+						}
+					}
 				}
 				if (fits){
 					for (int kk = 0; kk < inp.getLength(); kk++){
+						probBoard[ii+kk][jj] += fitsHits ? 100 : 1;
+					}
+				}
+				if (findOpponent().getHitMissSquare()[ii][jj] == ToEnemy.HIT && !sunkBoard[ii][jj]){
+					probBoard[ii][jj] = 0;
+				}
+			}
+		}
+	}
+	
+	public void huntRight(Ship inp){
+		for(int ii = 0; ii < size; ii++){
+			for(int jj = 0; jj < size; jj++){
+				boolean fits = true;
+				for (int kk = 0; kk < inp.getIntactLength(); kk++){
+					if (jj+kk >= size || findOpponent().getHitMissSquare()[ii][jj+kk] != ToEnemy.UNTOUCHED){
+						fits = false;
+					}
+				}
+				if (fits){
+					for (int kk = 0; kk < inp.getIntactLength(); kk++){
 						probBoard[ii][jj+kk]++;
 					}
 				}
@@ -95,24 +127,23 @@ public class ProbDensityAgent extends Agent{
 		}
 	}
 	
-	public void probBoardUp(Ship inp){
+	public void huntUp(Ship inp){
 		for(int ii = 0; ii < size; ii++){
 			for(int jj = 0; jj < size; jj++){
 				boolean fits = true;
-				for (int kk = 0; kk < inp.getLength(); kk++){
-					if (ii+kk >= size || findOpponent().getHitMissSquare()[ii+kk][jj] != ToEnemy.UNTOUCHED)
+				for (int kk = 0; kk < inp.getIntactLength(); kk++){
+					if (ii+kk >= size || findOpponent().getHitMissSquare()[ii+kk][jj] != ToEnemy.UNTOUCHED){
 						fits = false;
+					}
 				}
 				if (fits){
-					for (int kk = 0; kk < inp.getLength(); kk++){
+					for (int kk = 0; kk < inp.getIntactLength(); kk++){
 						probBoard[ii+kk][jj]++;
 					}
 				}
 			}
 		}
 	}
-
-
 
 	@Override
 	public void placeAll(Game g, Scanner sc) {
@@ -144,14 +175,19 @@ public class ProbDensityAgent extends Agent{
 		
 	}
 
-
-
 	@Override
 	public Tuple<Integer, Integer> getAttackVector(Game g, Scanner sc) {
 		if (enemyFleet == null){
 			enemyFleet = findOpponent().getFleet();
 		}
 		if (unspentHits == 0){
+			for(int ii = 0; ii < size; ii++){
+				for (int jj = 0; jj < size; jj++){
+					if (findOpponent().getHitMissSquare()[ii][jj] == ToEnemy.HIT){
+						sunkBoard[ii][jj] = true;
+					}
+				}
+			}
 			huntUpdateProbBoard();
 		} else {
 			killUpdateProbBoard();
@@ -177,8 +213,6 @@ public class ProbDensityAgent extends Agent{
 		return new Tuple<Integer,Integer>(xCoord,yCoord);
 	}
 
-
-
 	@Override
 	public void message(Message m) {
 		if (m instanceof HitMessage){
@@ -191,7 +225,6 @@ public class ProbDensityAgent extends Agent{
 					break;
 				}
 			}
-			sinkShips();
 		}
 	}
 }
