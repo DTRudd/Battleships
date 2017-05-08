@@ -177,7 +177,6 @@ public class ProbDensityAgent extends Agent{
 
 	@Override
 	public Tuple<Integer, Integer> getAttackVector(Game g, Scanner sc) {
-		System.out.println("A");
 		if (enemyFleet == null){
 			enemyFleet = new ArrayList<Ship>();
 			for (Ship s : findOpponent().getFleet()){
@@ -209,8 +208,6 @@ public class ProbDensityAgent extends Agent{
 				}
 			}
 		}
-		System.out.println("B");
-		System.out.println(xCoord + "," + yCoord);
 		return new Tuple<Integer,Integer>(xCoord,yCoord);
 	}
 

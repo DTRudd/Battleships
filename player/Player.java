@@ -19,15 +19,26 @@ public abstract class Player {
 	protected int size;
 	protected Board playerSquare;
 	protected Game g;
+	int turns;
+	
 	public Player(Game g,int size) {
 		fleet = new ArrayList<Ship>();
 		this.size = size;
 		playerSquare = new Board(size);
 		this.g = g;
+		turns = 0;
 	}
 	
 	public Game getGame(){
 		return g;
+	}
+	
+	public int getTurns(){
+		return turns;
+	}
+	
+	public void incrementTurns(){
+		turns++;
 	}
 	
 	public Player findOpponent(){
