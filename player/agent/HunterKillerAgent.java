@@ -67,7 +67,10 @@ public class HunterKillerAgent extends Agent {
 	@Override
 	public Tuple<Integer, Integer> getAttackVector(Game g, Scanner sc) {
 		if (enemyFleet == null){
-			enemyFleet = findOpponent().getFleet();
+			enemyFleet = new ArrayList<Ship>();
+			for (Ship s : findOpponent().getFleet()){
+				enemyFleet.add(s);
+			}
 		}
 		int tmp = enemyFleet.stream().map(Ship::getLength).reduce(Math::min).get();
 		if (tmp != paritySize){
