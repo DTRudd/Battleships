@@ -178,10 +178,7 @@ public class ProbDensityAgent extends Agent{
 	@Override
 	public Tuple<Integer, Integer> getAttackVector(Game g, Scanner sc) {
 		if (enemyFleet == null){
-			enemyFleet = new ArrayList<Ship>();
-			for (Ship s : findOpponent().getFleet()){
-				enemyFleet.add(s);
-			}
+			enemyFleet = findOpponent().getFleet();
 		}
 		if (unspentHits == 0){
 			for(int ii = 0; ii < size; ii++){
@@ -195,7 +192,12 @@ public class ProbDensityAgent extends Agent{
 		} else {
 			killUpdateProbBoard();
 		}
-		
+		for(int ii = size-1; ii > -1; ii--){
+			for (int jj = 0; jj < size; jj++){
+				System.out.print(probBoard[ii][jj] + "\t");
+			}
+			System.out.println();
+		}
 		int xCoord = 0;
 		int yCoord = 0;
 		int max = 0;
