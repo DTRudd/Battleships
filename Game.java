@@ -27,7 +27,7 @@ public class Game extends Thread{
 	
 	public Game(int size, Scanner sc){
 		player1 = new HumanPlayer(this,size);
-		player2 = new SequentialAgent(this,size);
+		player2 = new ProbDensityAgent(this,size);
 		gScanner = sc;
 		this.size = size;
 		addFleet();
