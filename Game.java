@@ -166,7 +166,7 @@ public class Game extends Thread{
 		Tuple<Integer,Integer> coords = attPlayer.getAttackVector(this,gScanner);
 		if (attPlayer instanceof Agent){
 			try{
-				Thread.sleep(750);
+				Thread.sleep(150);
 			} catch(Exception e){}
 		}
 		int xCoord = coords.first();

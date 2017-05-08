@@ -113,13 +113,13 @@ public class ProbDensityAgent extends Agent{
 		for(int ii = 0; ii < size; ii++){
 			for(int jj = 0; jj < size; jj++){
 				boolean fits = true;
-				for (int kk = 0; kk < inp.getIntactLength(); kk++){
+				for (int kk = 0; kk < inp.getLength(); kk++){
 					if (jj+kk >= size || findOpponent().getHitMissSquare()[ii][jj+kk] != ToEnemy.UNTOUCHED){
 						fits = false;
 					}
 				}
 				if (fits){
-					for (int kk = 0; kk < inp.getIntactLength(); kk++){
+					for (int kk = 0; kk < inp.getLength(); kk++){
 						probBoard[ii][jj+kk]++;
 					}
 				}
@@ -131,13 +131,13 @@ public class ProbDensityAgent extends Agent{
 		for(int ii = 0; ii < size; ii++){
 			for(int jj = 0; jj < size; jj++){
 				boolean fits = true;
-				for (int kk = 0; kk < inp.getIntactLength(); kk++){
+				for (int kk = 0; kk < inp.getLength(); kk++){
 					if (ii+kk >= size || findOpponent().getHitMissSquare()[ii+kk][jj] != ToEnemy.UNTOUCHED){
 						fits = false;
 					}
 				}
 				if (fits){
-					for (int kk = 0; kk < inp.getIntactLength(); kk++){
+					for (int kk = 0; kk < inp.getLength(); kk++){
 						probBoard[ii+kk][jj]++;
 					}
 				}
@@ -177,6 +177,7 @@ public class ProbDensityAgent extends Agent{
 
 	@Override
 	public Tuple<Integer, Integer> getAttackVector(Game g, Scanner sc) {
+		System.out.println("A");
 		if (enemyFleet == null){
 			enemyFleet = new ArrayList<Ship>();
 			for (Ship s : findOpponent().getFleet()){
@@ -195,7 +196,7 @@ public class ProbDensityAgent extends Agent{
 		} else {
 			killUpdateProbBoard();
 		}
-		
+
 		int xCoord = 0;
 		int yCoord = 0;
 		int max = 0;
@@ -208,6 +209,8 @@ public class ProbDensityAgent extends Agent{
 				}
 			}
 		}
+		System.out.println("B");
+		System.out.println(xCoord + "," + yCoord);
 		return new Tuple<Integer,Integer>(xCoord,yCoord);
 	}
 
